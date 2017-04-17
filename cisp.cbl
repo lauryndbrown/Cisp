@@ -185,6 +185,10 @@
            MOVE WS-CURR-COMMAND TO WS-COMMAND-NAME.
            PERFORM CALL-STACK-ADD-PROCEDURE.
        INIT-CALL-STACK-PROCEDURE.
+      * Preventing the error of something already being in the
+      * stack file after a system crash
+           OPEN OUTPUT CALL-STACK.
+           CLOSE CALL-STACK.
            OPEN I-O CALL-STACK.
            MOVE 1 TO WS-CALL-STACK-NEXT-ID.
        CLOSE-CALL-STACK-PROCEDURE.
