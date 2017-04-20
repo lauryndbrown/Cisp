@@ -18,9 +18,8 @@
       *****************************************
       *    WS Shared with LOGGER SubRoutine
       *****************************************
-           01 WS-SHARED-DATA PIC X(10).
+           01 WS-LOG-OPERATION-FLAG PIC X(5).
            01 WS-LOG-RECORD.
-               02 WS-LOG-RECORD-ID PIC 9(10).
                02 WS-LOG-RECORD-FUNCTION-NAME PIC X(40).
                02 WS-LOG-RECORD-MESSAGE PIC X(100).
       *****************************************
@@ -38,8 +37,19 @@
        PROCEDURE DIVISION.
        MAIN-PROCEDURE.
             DISPLAY "CISP".
-            CALL 'LOGGER' USING WS-LOG-RECORD.
-            DISPLAY WS-LOG-RECORD.
+            MOVE "OPEN" TO WS-LOG-OPERATION-FLAG.
+            CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
+            MOVE "ADD" TO WS-LOG-OPERATION-FLAG.
+            MOVE "TOKENIZER" TO WS-LOG-RECORD-FUNCTION-NAME.
+            MOVE "Starting Tokenizer" TO WS-LOG-RECORD-MESSAGE.
+            CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
+
+            CALL "TOKENIZER".
+
+
+
+            MOVE "CLOSE" TO WS-LOG-OPERATION-FLAG.
+            CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
       *     PERFORM LOG-INIT-PROCEDURE.
       *     PERFORM FILE-HANDLING-PROCEDURE.
       *     MOVE "MAIN-PROCEDURE" TO WS-LOG-RECORD-FUNCTION-NAME.
@@ -51,17 +61,11 @@
       *     MOVE "COMPLETED LISP-PROCEDURE"
       *       TO WS-LOG-RECORD-MESSAGE.
       *     PERFORM LOG-WRITE-TO-PROCEDURE.
-           STOP RUN.
-       GET-FILE-NAME-PROCEDURE.
-      *     ACCEPT LISP-NAME.
-      *     IF LISP-NAME EQUALS SPACES THEN
-      *         MOVE "..\test\arithmetic.lisp" TO LISP-NAME
-      *     END-IF.
-       FILE-HANDLING-PROCEDURE.
-           PERFORM GET-FILE-NAME-PROCEDURE.
-      *     OPEN INPUT LISP-FILE.
-      *     READ LISP-FILE.
-      *     CLOSE LISP-FILE.
+      *     STOP RUN.
+           GOBACK.
+       WRITE-LOGGER-PROCEDURE.
+
+
        LISP-PROCEDURE.
       *     PERFORM UNSTRING-LISP-PROCEDURE.
       *******log completion

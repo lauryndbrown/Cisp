@@ -5,17 +5,18 @@
       * Tectonics: cobc
       ******************************************************************
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. LISP-TOKENIZER.
+       PROGRAM-ID. TOKENIZER.
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT LISP-FILE ASSIGN TO DYNAMIC LISP-NAME
+           SELECT LISP-FILE ASSIGN TO DYNAMIC WS-LISP-NAME
                ORGANISATION IS LINE SEQUENTIAL.
        DATA DIVISION.
        FILE SECTION.
        FD LISP-FILE.
            01 IN-LISP-RECORD PIC X(2000).
        WORKING-STORAGE SECTION.
+       01 WS-LISP-NAME PIC X(30).
        01 WS-IN-LISP-RECORD PIC X(2000).
        78 WS-SYMBOL-LENGTH VALUE 1000.
        78 WS-MAX-LISP-LENGTH VALUE 2000.
@@ -51,13 +52,63 @@
            02 WS-PARSE-EXPRESSION-START PIC 9(5).
            02 WS-PARSE-EXPRESSION-END PIC 9(5).
            02 WS-PARSE-EXPRESSION-LEN PIC 9(5).
+      *****************************************
+      *    WS Shared with LOGGER SubRoutine
+      *****************************************
+           01 WS-LOG-OPERATION-FLAG PIC X(5).
+           01 WS-LOG-RECORD.
+               02 WS-LOG-RECORD-FUNCTION-NAME PIC X(40).
+               02 WS-LOG-RECORD-MESSAGE PIC X(100).
+       LINKAGE SECTION.
+
        PROCEDURE DIVISION.
        MAIN-PROCEDURE.
-            DISPLAY "Hello world"
-            STOP RUN.
-              FORMAT-LISP-PROCEDURE.
+           DISPLAY "Tokenizer".
+           PERFORM FILE-HANDLING-PROCEDURE.
+           DISPLAY IN-LISP-RECORD.
+
+
+           PERFORM UNSTRING-LISP-PROCEDURE.
+           GOBACK.
+
+
+       FILE-HANDLING-PROCEDURE.
+      ***** Opens LISP-FILE for reading ****************************
+           ACCEPT WS-LISP-NAME.
+           IF WS-LISP-NAME EQUALS SPACES THEN
+               MOVE "..\test\arithmetic.lisp" TO WS-LISP-NAME
+           END-IF.
+           OPEN INPUT LISP-FILE.
+           READ LISP-FILE.
+           CLOSE LISP-FILE.
+      ******LOG File Handling
+           MOVE "ADD" TO WS-LOG-OPERATION-FLAG.
+           MOVE "TOKENIZER:FILE-HANDLING-PROCEDURE" TO
+             WS-LOG-RECORD-FUNCTION-NAME.
+           MOVE "COMPLETED reading LISP-FILE" TO WS-LOG-RECORD-MESSAGE.
+           CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
+       UNSTRING-LISP-PROCEDURE.
+           PERFORM FORMAT-LISP-PROCEDURE.
+           MOVE 1 TO STRING-PTR.
+           MOVE 0 TO WS-SYMBOL-TABLE-SIZE.
+           SET WS-FLAG-YES TO FALSE.
+           PERFORM VARYING WS-COUNT FROM 1 BY 1 UNTIL
+             WS-COUNT > WS-SYMBOL-LENGTH OR WS-FLAG
+               UNSTRING WS-IN-LISP-RECORD DELIMITED BY ALL ' ' INTO
+               WS-SYMBOL(WS-COUNT) WITH POINTER STRING-PTR
+               IF WS-SYMBOL(WS-COUNT) = SPACES THEN
+                   SET WS-FLAG-YES TO TRUE
+               ELSE
+                   ADD 1 TO WS-SYMBOL-TABLE-SIZE
+               END-IF
+           END-PERFORM.
+       FORMAT-LISP-PROCEDURE.
+
            MOVE IN-LISP-RECORD TO WS-IN-LISP-RECORD.
            PERFORM CALC-LISP-LENGTH.
+           DISPLAY "LENGTH:" WS-LISP-LENGTH.
+           GOBACK.
+
            MOVE 1 TO WS-FORMAT-STR-INDEX.
            IF NOT WS-IN-LISP-RECORD(2:1) EQUAL " " THEN
                MOVE WS-IN-LISP-RECORD TO WS-PAREN-TEMP-STR
@@ -78,7 +129,21 @@
                WHEN ")"
                    PERFORM FORMAT-PAREN-SPACE-PROCEDURE
            END-PERFORM.
- RESET-PARSE-FLAGS-PROCEDURE.
+       CALC-LISP-LENGTH.
+           MOVE 0 TO WS-LISP-LENGTH.
+           MOVE 0 TO WS-NUM-LENGTH-ADD.
+           PERFORM VARYING WS-FORMAT-STR-INDEX FROM 1 BY 1 UNTIL
+           WS-FORMAT-STR-INDEX = WS-MAX-LISP-LENGTH
+               IF NOT WS-IN-LISP-RECORD(WS-FORMAT-STR-INDEX:1)
+               EQUALS " " THEN
+                   ADD 1 TO WS-LISP-LENGTH
+                   ADD WS-NUM-LENGTH-ADD TO WS-LISP-LENGTH
+                   MOVE 0 TO WS-NUM-LENGTH-ADD
+               ELSE
+                   ADD 1 TO WS-NUM-LENGTH-ADD
+               END-IF
+           END-PERFORM.
+       RESET-PARSE-FLAGS-PROCEDURE.
            SET WS-OPEN-PAREN-YES TO FALSE.
            SET WS-CLOSE-PAREN-YES TO FALSE.
            MOVE 0 TO WS-PARSE-EXPRESSION-START.
@@ -123,35 +188,8 @@
            DISPLAY "Parse start:" WS-PARSE-EXPRESSION-START
            " end: "WS-PARSE-EXPRESSION-END
            " len: " WS-PARSE-EXPRESSION-LEN.
-       UNSTRING-LISP-PROCEDURE.
-           PERFORM FORMAT-LISP-PROCEDURE.
-           MOVE 1 TO STRING-PTR.
-           MOVE 0 TO WS-SYMBOL-TABLE-SIZE.
-           SET WS-FLAG-YES TO FALSE.
-           PERFORM VARYING WS-COUNT FROM 1 BY 1 UNTIL
-             WS-COUNT > WS-SYMBOL-LENGTH OR WS-FLAG
-               UNSTRING WS-IN-LISP-RECORD DELIMITED BY ALL ' ' INTO
-               WS-SYMBOL(WS-COUNT) WITH POINTER STRING-PTR
-               IF WS-SYMBOL(WS-COUNT) = SPACES THEN
-                   SET WS-FLAG-YES TO TRUE
-               ELSE
-                   ADD 1 TO WS-SYMBOL-TABLE-SIZE
-               END-IF
-           END-PERFORM.
-       CALC-LISP-LENGTH.
-           MOVE 0 TO WS-LISP-LENGTH.
-           MOVE 0 TO WS-NUM-LENGTH-ADD.
-           PERFORM VARYING WS-FORMAT-STR-INDEX FROM 1 BY 1 UNTIL
-           WS-FORMAT-STR-INDEX = WS-MAX-LISP-LENGTH
-               IF NOT WS-IN-LISP-RECORD(WS-FORMAT-STR-INDEX:1)
-               EQUALS " " THEN
-                   ADD 1 TO WS-LISP-LENGTH
-                   ADD WS-NUM-LENGTH-ADD TO WS-LISP-LENGTH
-                   MOVE 0 TO WS-NUM-LENGTH-ADD
-               ELSE
-                   ADD 1 TO WS-NUM-LENGTH-ADD
-               END-IF
-           END-PERFORM.
+
+
        FORMAT-CHECK-PAREN-PROCEDURE.
       *    ----Check left side of paren
            SUBTRACT 1 FROM WS-FORMAT-STR-INDEX.
@@ -210,4 +248,4 @@
            ELSE IF WS-PAREN-LEFT-YES THEN
                PERFORM FORMAT-ADD-LEFT-SPACE
            END-IF.
-       END PROGRAM LISP-TOKENIZER.
+       END PROGRAM TOKENIZER.
