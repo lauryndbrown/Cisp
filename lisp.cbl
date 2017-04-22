@@ -33,6 +33,7 @@
        01 LS-LISP-SYMBOLS.
            02 LS-SYMBOL-TABLE-SIZE PIC 9.
            02 LS-SYMBOL PIC X(50) OCCURS 40 TIMES.
+           02 LS-SYMBOL-LEN PIC 9(2) OCCURS 40 TIMES.
        PROCEDURE DIVISION USING LS-LISP-SYMBOLS.
        MAIN-PROCEDURE.
            DISPLAY "LISP".
@@ -48,7 +49,6 @@
                    MOVE "REMOVE-FROM-CALL-STACK" TO WS-RECURSION-FLAG
       *             CALL "RECURSION" USING WS-RECURSION-FLAG
                WHEN OTHER
-
                    MOVE LS-SYMBOL(WS-SYMBOL-TABLE-INDEX)
                     TO WS-CURR-COMMAND
                    PERFORM LOG-CURRENT-COMMAND-PROCEDURE
@@ -96,19 +96,25 @@
            WHEN "+"
                DISPLAY "+"
                PERFORM INIT-RECURSION-OBJECT-PROCEDURE
+
       *         IF WS-OPEN-PAREN-YES THEN
       *             MOVE 0 TO WS-COMMAND-RESULT-NUMERIC
       *         END-IF
       *         PERFORM LISP-ADD-PROCEDURE
            WHEN OTHER
            DISPLAY "other"
-      *         IF WS-CURR-COMMAND(1:WS-PARSE-EXPRESSION-LEN) IS NUMERIC THEN
+      ************ Evalute values
 
-      *             MOVE WS-CURR-COMMAND TO WS-COMMAND-RESULT-NUMERIC
+              IF WS-CURR-COMMAND(1:LS-SYMBOL-LEN(WS-SYMBOL-TABLE-INDEX))
+                  IS NUMERIC THEN
+
+                   MOVE WS-CURR-COMMAND TO WS-COMMAND-RESULT-NUMERIC
+                   DISPLAY "NUMERIC"
+                   DISPLAY WS-COMMAND-RESULT-NUMERIC
       *             PERFORM LISP-EVAL-LAST-EXPRESSION
-      *         ELSE
-      *             Display "OTHER"
-      *         END-IF
+               ELSE
+                   Display "OTHER"
+               END-IF
            .
 
 
