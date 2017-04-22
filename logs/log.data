@@ -5,3 +5,9 @@
 0000000005TOKENIZER:TOKENIZE-LISP-PROCEDURE       COMPLETED tokenizing lisp
 0000000006LISP                                    Starting Lisp Evalutation
 0000000007RECURSION:INIT                          Initialized Call Stack
+0000000008LISP                                    Command:write
+0000000009LISP                                    Command:+
+0000000010RECURSION:ADD-TO-CALL-STACK             00001write
+0000000011LISP                                    Command:7
+0000000012LISP                                    Command:9
+0000000013LOGGER:LOG-CLOSE-PROCEDURE              Closed logging file

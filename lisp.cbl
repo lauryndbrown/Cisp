@@ -9,6 +9,8 @@
        DATA DIVISION.
        FILE SECTION.
        WORKING-STORAGE SECTION.
+       01 WS-SYMBOL-TABLE-INDEX PIC 9(4).
+       01 WS-CURR-COMMAND PIC X(100).
       *****************************************
       *    WS Shared with LOGGER SubRoutine
       *****************************************
@@ -19,39 +21,98 @@
       *****************************************
       *    WS Shared with RECUSRION SubRoutine
       *****************************************
-           01 WS-RECURSION-FLAG PIC X(5).
+       01 WS-RECURSION-FLAG PIC X(30).
+       01 WS-RECURSION-OBJECT.
+          02 WS-COMMAND-NAME PIC X(20).
+          02 WS-COMMAND-RESULT PIC X(20).
+          02 WS-COMMAND-RESULT-NUMERIC
+          REDEFINES WS-COMMAND-RESULT PIC 9(20).
+          02 WS-COMMAND-RETURNS-RESULT PIC X.
+             88 WS-COMMAND-RETURNS-RESULT-YES VALUE 'Y', FALSE 'N'.
        LINKAGE SECTION.
        01 LS-LISP-SYMBOLS.
            02 LS-SYMBOL-TABLE-SIZE PIC 9.
            02 LS-SYMBOL PIC X(50) OCCURS 40 TIMES.
        PROCEDURE DIVISION USING LS-LISP-SYMBOLS.
        MAIN-PROCEDURE.
-            DISPLAY "LISP".
-      *********Initialize Recursion
-           MOVE "INIT" TO WS-RECURSION-FLAG.
+           DISPLAY "LISP".
+           PERFORM INIT-CALL-STACK-PROCEDURE.
+      ********* EVALUTE LISP
+           PERFORM VARYING WS-SYMBOL-TABLE-INDEX FROM 1 BY 1 UNTIL
+           WS-SYMBOL-TABLE-INDEX > LS-SYMBOL-TABLE-SIZE
+               EVALUATE LS-SYMBOL(WS-SYMBOL-TABLE-INDEX)
+               WHEN "("
+                   DISPLAY "Open paren"
+               WHEN ")"
+                   DISPLAY "closed paren"
+                   MOVE "REMOVE-FROM-CALL-STACK" TO WS-RECURSION-FLAG
+      *             CALL "RECURSION" USING WS-RECURSION-FLAG
+               WHEN OTHER
+
+                   MOVE LS-SYMBOL(WS-SYMBOL-TABLE-INDEX)
+                    TO WS-CURR-COMMAND
+                   PERFORM LOG-CURRENT-COMMAND-PROCEDURE
+                   PERFORM EVALUATE-CURRENT-COMMAND
+           END-PERFORM.
+           MOVE "PRINT" TO WS-RECURSION-FLAG.
            CALL "RECURSION" USING WS-RECURSION-FLAG.
+           PERFORM CLOSE-CALL-STACK-PROCEDURE.
            GOBACK.
-       EVALUATE-LISP-PRCEDURE.
-      *     PERFORM INIT-CALL-STACK-PROCEDURE.
-      *     PERFORM VARYING WS-COUNT FROM 1 BY 1 UNTIL
-      *     WS-COUNT = WS-SYMBOL-TABLE-SIZE
-      *         PERFORM PARSE-STRING-PROCEDURE
-      *         DISPLAY "AFTER PARSE-STRING-PROCEDURE IN"
-      *         " EVALUATE-LISP-PRCEDURE."
-      *         DISPLAY "COUNT:" WS-COUNT
-      *         " SYMBOL:" WS-SYMBOL(WS-COUNT) "$"
-      *         " START:" WS-PARSE-EXPRESSION-START
-      *         " LEN:" WS-PARSE-EXPRESSION-LEN
-      *         " END:" WS-PARSE-EXPRESSION-END
-      *         MOVE WS-SYMBOL(WS-COUNT)
-      *         (WS-PARSE-EXPRESSION-START:WS-PARSE-EXPRESSION-LEN)
-      *         TO WS-CURR-COMMAND
+       INIT-CALL-STACK-PROCEDURE.
+      *********Initialize Call stack for Recursion
+       MOVE "INIT" TO WS-RECURSION-FLAG.
+       CALL "RECURSION" USING WS-RECURSION-FLAG.
+       INIT-RECURSION-OBJECT-PROCEDURE.
+           IF WS-COMMAND-NAME = SPACES THEN
+               DISPLAY "NO PREVIOUS OBJECT"
+               MOVE WS-CURR-COMMAND TO WS-COMMAND-NAME
+           ELSE
+      *****Recursion detected saving current state to the stack
+               DISPLAY "PREVIOUS OBJECT"
+               MOVE "ADD-TO-CALL-STACK" TO WS-RECURSION-FLAG
+               CALL "RECURSION" USING WS-RECURSION-FLAG,
+               WS-RECURSION-OBJECT
+      ******Add the next command to the recursion OBJECT
+               MOVE WS-CURR-COMMAND TO WS-COMMAND-NAME
+           END-IF.
+       CLOSE-CALL-STACK-PROCEDURE.
+           MOVE "CLOSE" TO WS-RECURSION-FLAG.
+           CALL "RECURSION" USING WS-RECURSION-FLAG.
+       LOG-CURRENT-COMMAND-PROCEDURE.
       ******log Current Command To be Executed
-               MOVE 'EVALUATE-LISP-PRCEDURE'
-               TO WS-LOG-RECORD-FUNCTION-NAME
-      *         STRING 'Command:' DELIMITED BY SIZE
-      *         WS-CURR-COMMAND DELIMITED BY SIZE
-      *         INTO WS-LOG-RECORD-MESSAGE
+           MOVE "ADD" TO WS-LOG-OPERATION-FLAG.
+           MOVE "LISP" TO
+                WS-LOG-RECORD-FUNCTION-NAME.
+           STRING 'Command:' DELIMITED BY SIZE
+             WS-CURR-COMMAND DELIMITED BY SIZE
+             INTO WS-LOG-RECORD-MESSAGE
+           CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
+       EVALUATE-CURRENT-COMMAND.
+           EVALUATE WS-CURR-COMMAND
+           WHEN "write"
+               DISPLAY "write"
+               PERFORM INIT-RECURSION-OBJECT-PROCEDURE
+      *         PERFORM LISP-WRITE-PROCEDURE
+           WHEN "+"
+               DISPLAY "+"
+               PERFORM INIT-RECURSION-OBJECT-PROCEDURE
+      *         IF WS-OPEN-PAREN-YES THEN
+      *             MOVE 0 TO WS-COMMAND-RESULT-NUMERIC
+      *         END-IF
+      *         PERFORM LISP-ADD-PROCEDURE
+           WHEN OTHER
+           DISPLAY "other"
+      *         IF WS-CURR-COMMAND(1:WS-PARSE-EXPRESSION-LEN) IS NUMERIC THEN
+
+      *             MOVE WS-CURR-COMMAND TO WS-COMMAND-RESULT-NUMERIC
+      *             PERFORM LISP-EVAL-LAST-EXPRESSION
+      *         ELSE
+      *             Display "OTHER"
+      *         END-IF
+           .
+
+
+       OTHER-PROCEDURES.
       *         PERFORM LOG-WRITE-TO-PROCEDURE
       ************
       *         PERFORM EVALUATE-CURRENT-COMMAND
