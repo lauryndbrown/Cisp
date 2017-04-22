@@ -25,7 +25,7 @@
       *****************************************
       *    WS Shared with TOKENIZER SubRoutine
       *****************************************
-      *****IF WS-SYMBOL-LENGTH CHANGED HERE PLEASE CHANGE IN TOKENIZER
+      *****IF WS-SYMBOL-LENGTH CHANGED HERE PLEASE CHANGE IN TOKENIZER, LISP
        78 WS-SYMBOL-LENGTH VALUE 40.
        01 WS-LISP-SYMBOLS.
            02 WS-SYMBOL-TABLE-SIZE PIC 9.
@@ -54,7 +54,7 @@
             MOVE "LISP" TO WS-LOG-RECORD-FUNCTION-NAME.
             MOVE "Starting Lisp Evalutation" TO WS-LOG-RECORD-MESSAGE.
             CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
-      *      CALL "LISP" USING WS-TEST.
+            CALL "LISP" USING WS-LISP-SYMBOLS.
 
 
 

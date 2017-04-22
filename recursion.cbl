@@ -44,12 +44,28 @@
        01 WS-RETURN.
            02 WS-RETURN-VALUE PIC X(20).
            02 WS-RETURN-VALUE-NUMERIC PIC 9(20).
+      *****************************************
+      *    WS Shared with LOGGER SubRoutine
+      *****************************************
+           01 WS-LOG-OPERATION-FLAG PIC X(5).
+           01 WS-LOG-RECORD.
+               02 WS-LOG-RECORD-FUNCTION-NAME PIC X(40).
+               02 WS-LOG-RECORD-MESSAGE PIC X(100).
        LINKAGE SECTION.
-
-       PROCEDURE DIVISION.
+       01 LS-RECURSION-FLAG PIC X(5).
+       PROCEDURE DIVISION USING LS-RECURSION-FLAG.
        MAIN-PROCEDURE.
-            DISPLAY "Hello world"
-            STOP RUN.
+           DISPLAY "RECURSION"
+           EVALUATE LS-RECURSION-FLAG
+           WHEN "INIT"
+               MOVE "ADD" TO WS-LOG-OPERATION-FLAG.
+               MOVE "RECURSION:INIT" TO
+                WS-LOG-RECORD-FUNCTION-NAME.
+               MOVE "Initialized Call Stack"
+                TO WS-LOG-RECORD-MESSAGE.
+               CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
+
+           GOBACK.
        RECURSION-PROCEDURE.
            MOVE WS-CALL-STACK-NEXT-ID TO WS-COMMAND-ID.
            MOVE WS-CURR-COMMAND TO WS-COMMAND-NAME.
@@ -59,6 +75,7 @@
       * stack file after a system crash
            OPEN OUTPUT CALL-STACK.
            CLOSE CALL-STACK.
+      * Actually opening the call-stack for writing.
            OPEN I-O CALL-STACK.
            MOVE 1 TO WS-CALL-STACK-NEXT-ID.
        CLOSE-CALL-STACK-PROCEDURE.
@@ -87,7 +104,7 @@
            STRING COMMAND-ID DELIMITED BY SIZE
            COMMAND-NAME DELIMITED BY SIZE
            INTO WS-LOG-RECORD-MESSAGE
-           PERFORM LOG-WRITE-TO-PROCEDURE
+      *     PERFORM LOG-WRITE-TO-PROCEDURE
       ******
            WRITE CALL-STACK-FILE.
            ADD 1 TO WS-CALL-STACK-NEXT-ID.
@@ -119,7 +136,7 @@
                COMMAND-RESULT DELIMITED BY SPACE
                COMMAND-RESULT-NUMERIC DELIMITED BY SPACE
                INTO WS-LOG-RECORD-MESSAGE
-           PERFORM LOG-WRITE-TO-PROCEDURE
+      *     PERFORM LOG-WRITE-TO-PROCEDURE
       ****************
            DISPLAY "DELETE".
            PERFORM PRINT-CALL-STACK-PROCEDURE.
@@ -143,11 +160,11 @@
                COMMAND-RESULT DELIMITED BY SPACE
                COMMAND-RESULT-NUMERIC DELIMITED BY SPACE
                INTO WS-LOG-RECORD-MESSAGE.
-           PERFORM LOG-WRITE-TO-PROCEDURE.
+      *     PERFORM LOG-WRITE-TO-PROCEDURE.
       ***************
       *     PERFORM MOVE-CALL-STACK-TO-WS.
            MOVE COMMAND-NAME TO WS-CURR-COMMAND.
-           PERFORM EVALUATE-CURRENT-COMMAND.
+      *     PERFORM EVALUATE-CURRENT-COMMAND.
 
       *     IF NOT WS-CLOSE-PAREN-YES THEN
                PERFORM MOVE-WS-TO-CALL-STACK
@@ -160,7 +177,7 @@
                COMMAND-RESULT DELIMITED BY SPACE
                COMMAND-RESULT-NUMERIC DELIMITED BY SPACE
                INTO WS-LOG-RECORD-MESSAGE
-           PERFORM LOG-WRITE-TO-PROCEDURE
+      *     PERFORM LOG-WRITE-TO-PROCEDURE
       ***************
                REWRITE CALL-STACK-FILE
                END-REWRITE
