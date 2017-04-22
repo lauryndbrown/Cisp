@@ -18,7 +18,6 @@
        WORKING-STORAGE SECTION.
        01 WS-LISP-NAME PIC X(30).
        01 WS-IN-LISP-RECORD PIC X(2000).
-       78 WS-SYMBOL-LENGTH VALUE 1000.
        78 WS-MAX-LISP-LENGTH VALUE 2000.
        01 WS-LISP-LENGTH PIC 9(10).
        01 WS-FORMAT-LISP.
@@ -30,9 +29,6 @@
            02 WS-PAREN-TEMP-STR PIC X(2000).
            02 WS-PAREN-TEMP-NUM PIC 9(10).
            02 WS-WHICH-PAREN PIC X.
-       01 WS-LISP-SYMBOLS.
-           02 WS-SYMBOL-TABLE-SIZE PIC 9.
-           02 WS-SYMBOL PIC X(50) OCCURS WS-SYMBOL-LENGTH TIMES.
        01 WS-FORMAT-STR-INDEX PIC 9(10).
        01 WS-COUNT PIC 9(10).
        01 STRING-PTR PIC 9(10).
@@ -55,13 +51,17 @@
       *****************************************
       *    WS Shared with LOGGER SubRoutine
       *****************************************
-           01 WS-LOG-OPERATION-FLAG PIC X(5).
-           01 WS-LOG-RECORD.
-               02 WS-LOG-RECORD-FUNCTION-NAME PIC X(40).
-               02 WS-LOG-RECORD-MESSAGE PIC X(100).
+       01 WS-LOG-OPERATION-FLAG PIC X(5).
+       01 WS-LOG-RECORD.
+           02 WS-LOG-RECORD-FUNCTION-NAME PIC X(40).
+           02 WS-LOG-RECORD-MESSAGE PIC X(100).
        LINKAGE SECTION.
-
-       PROCEDURE DIVISION.
+      ********* Size of table must equal size specified in CISP
+       01 LS-SYMBOL-LENGTH PIC 9.
+       01 LS-LISP-SYMBOLS.
+           02 LS-SYMBOL-TABLE-SIZE PIC 9.
+           02 LS-SYMBOL PIC X(50) OCCURS 40 TIMES.
+       PROCEDURE DIVISION USING LS-SYMBOL-LENGTH, LS-LISP-SYMBOLS.
        MAIN-PROCEDURE.
            DISPLAY "Tokenizer".
       ******** Open and read in the lisp file
@@ -92,16 +92,16 @@
       ******** Tokenizes the lisp file and stores it in the WS-SYMBOL Table
            PERFORM FORMAT-LISP-PROCEDURE.
            MOVE 1 TO STRING-PTR.
-           MOVE 0 TO WS-SYMBOL-TABLE-SIZE.
+           MOVE 0 TO LS-SYMBOL-TABLE-SIZE.
            SET WS-FLAG-YES TO FALSE.
            PERFORM VARYING WS-COUNT FROM 1 BY 1 UNTIL
-             WS-COUNT > WS-SYMBOL-LENGTH OR WS-FLAG
+             WS-COUNT > LS-SYMBOL-LENGTH OR WS-FLAG
                UNSTRING WS-IN-LISP-RECORD DELIMITED BY ALL ' ' INTO
-               WS-SYMBOL(WS-COUNT) WITH POINTER STRING-PTR
-               IF WS-SYMBOL(WS-COUNT) = SPACES THEN
+               LS-SYMBOL(WS-COUNT) WITH POINTER STRING-PTR
+               IF LS-SYMBOL(WS-COUNT) = SPACES THEN
                    SET WS-FLAG-YES TO TRUE
                ELSE
-                   ADD 1 TO WS-SYMBOL-TABLE-SIZE
+                   ADD 1 TO LS-SYMBOL-TABLE-SIZE
                END-IF
            END-PERFORM.
       *****LOG File Handling
@@ -114,9 +114,9 @@
       ******* Prints Tokenized lisp stored in WS-SYMBOL Table
            MOVE 1 TO WS-COUNT.
            PERFORM VARYING WS-COUNT FROM 1 BY 1 UNTIL
-           WS-COUNT GREATER THAN WS-SYMBOL-TABLE-SIZE
+           WS-COUNT GREATER THAN LS-SYMBOL-TABLE-SIZE
                DISPLAY WS-COUNT
-               DISPLAY WS-SYMBOL(WS-COUNT)
+               DISPLAY LS-SYMBOL(WS-COUNT)
            END-PERFORM.
        FORMAT-LISP-PROCEDURE.
       ***** Calculates the length of the lisp program.
@@ -183,8 +183,8 @@
            MOVE 1 TO WS-PARSE-STR-INDEX.
            SET WS-PARSE-HAS-ENDED TO FALSE.
            PERFORM VARYING WS-PARSE-STR-INDEX FROM 1 BY 1
-           UNTIL WS-PARSE-STR-INDEX = WS-SYMBOL-TABLE-SIZE
-              MOVE WS-SYMBOL(WS-COUNT)(WS-PARSE-STR-INDEX:1)
+           UNTIL WS-PARSE-STR-INDEX = LS-SYMBOL-TABLE-SIZE
+              MOVE LS-SYMBOL(WS-COUNT)(WS-PARSE-STR-INDEX:1)
               TO WS-PARSE-STR-CHAR
               EVALUATE WS-PARSE-STR-CHAR
               WHEN '('
@@ -206,8 +206,8 @@
            END-PERFORM.
            DISPLAY "FINISHED PARSE-STRING-PROCEDURE".
            DISPLAY "INDEX:" WS-PARSE-STR-INDEX
-              " SIZE:" WS-SYMBOL-TABLE-SIZE
-              " LENGTH:" WS-SYMBOL-LENGTH.
+              " SIZE:" LS-SYMBOL-TABLE-SIZE
+              " LENGTH:" LS-SYMBOL-LENGTH.
            DISPLAY "Parse start:" WS-PARSE-EXPRESSION-START
            " end: "WS-PARSE-EXPRESSION-END
            " len: " WS-PARSE-EXPRESSION-LEN.

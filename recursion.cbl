@@ -44,6 +44,8 @@
        01 WS-RETURN.
            02 WS-RETURN-VALUE PIC X(20).
            02 WS-RETURN-VALUE-NUMERIC PIC 9(20).
+       LINKAGE SECTION.
+
        PROCEDURE DIVISION.
        MAIN-PROCEDURE.
             DISPLAY "Hello world"

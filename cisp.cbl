@@ -25,7 +25,11 @@
       *****************************************
       *    WS Shared with TOKENIZER SubRoutine
       *****************************************
-
+      *****IF WS-SYMBOL-LENGTH CHANGED HERE PLEASE CHANGE IN TOKENIZER
+       78 WS-SYMBOL-LENGTH VALUE 40.
+       01 WS-LISP-SYMBOLS.
+           02 WS-SYMBOL-TABLE-SIZE PIC 9.
+           02 WS-SYMBOL PIC X(50) OCCURS WS-SYMBOL-LENGTH TIMES.
       *****************************************
       *    WS Shared with LISP SubRoutine
       *****************************************
@@ -39,12 +43,19 @@
             DISPLAY "CISP".
             MOVE "OPEN" TO WS-LOG-OPERATION-FLAG.
             CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
+      ********* Tokenize the Lisp string
             MOVE "ADD" TO WS-LOG-OPERATION-FLAG.
             MOVE "TOKENIZER" TO WS-LOG-RECORD-FUNCTION-NAME.
             MOVE "Starting Tokenizer" TO WS-LOG-RECORD-MESSAGE.
             CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
+            CALL "TOKENIZER" USING WS-SYMBOL-LENGTH, WS-LISP-SYMBOLS.
+      ********* Evalute lisp
+            MOVE "ADD" TO WS-LOG-OPERATION-FLAG.
+            MOVE "LISP" TO WS-LOG-RECORD-FUNCTION-NAME.
+            MOVE "Starting Lisp Evalutation" TO WS-LOG-RECORD-MESSAGE.
+            CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
+      *      CALL "LISP" USING WS-TEST.
 
-            CALL "TOKENIZER".
 
 
 
