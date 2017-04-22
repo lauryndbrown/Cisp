@@ -66,8 +66,9 @@
            DISPLAY "Tokenizer".
       ******** Open and read in the lisp file
            PERFORM FILE-HANDLING-PROCEDURE.
-      *******
-           PERFORM UNSTRING-LISP-PROCEDURE.
+      ******* tokenize lisp and store in symbol table
+           PERFORM TOKENIZE-LISP-PROCEDURE.
+           PERFORM PRINT-SYMBOL-TABLE.
            GOBACK.
 
 
@@ -103,7 +104,12 @@
                    ADD 1 TO WS-SYMBOL-TABLE-SIZE
                END-IF
            END-PERFORM.
-      ***********
+      *****LOG File Handling
+           MOVE "ADD" TO WS-LOG-OPERATION-FLAG.
+           MOVE "TOKENIZER:TOKENIZE-LISP-PROCEDURE" TO
+             WS-LOG-RECORD-FUNCTION-NAME.
+           MOVE "COMPLETED tokenizing lisp" TO WS-LOG-RECORD-MESSAGE.
+           CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
        PRINT-SYMBOL-TABLE.
       ******* Prints Tokenized lisp stored in WS-SYMBOL Table
            MOVE 1 TO WS-COUNT.
@@ -146,6 +152,7 @@
              WS-LOG-RECORD-MESSAGE.
            CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
        CALC-LISP-LENGTH.
+      *****Calculate the acutal length of the lisp
            MOVE 0 TO WS-LISP-LENGTH.
            MOVE 0 TO WS-NUM-LENGTH-ADD.
            PERFORM VARYING WS-FORMAT-STR-INDEX FROM 1 BY 1 UNTIL
