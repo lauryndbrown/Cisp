@@ -11,6 +11,11 @@
        WORKING-STORAGE SECTION.
        01 WS-SYMBOL-TABLE-INDEX PIC 9(4).
        01 WS-CURR-COMMAND PIC X(100).
+       01 WS-CURRENT-VALUE PIC X(100).
+       01 WS-CURRENT-VALUE-NUMERIC
+       REDEFINES WS-CURRENT-VALUE PIC 9(10).
+       01 WS-INIT-COMMAND PIC X.
+           88 WS-INIT-COMMAND-YES VALUE "Y", FALSE 'N'.
       *****************************************
       *    WS Shared with LOGGER SubRoutine
       *****************************************
@@ -44,6 +49,7 @@
                EVALUATE LS-SYMBOL(WS-SYMBOL-TABLE-INDEX)
                WHEN "("
                    DISPLAY "Open paren"
+                   SET WS-INIT-COMMAND-YES TO TRUE
                WHEN ")"
                    DISPLAY "closed paren"
                    MOVE "REMOVE-FROM-CALL-STACK" TO WS-RECURSION-FLAG
@@ -52,7 +58,11 @@
                    MOVE LS-SYMBOL(WS-SYMBOL-TABLE-INDEX)
                     TO WS-CURR-COMMAND
                    PERFORM LOG-CURRENT-COMMAND-PROCEDURE
-                   PERFORM EVALUATE-CURRENT-COMMAND
+                   IF WS-INIT-COMMAND-YES THEN
+                       PERFORM INIT-RECURSION-OBJECT-PROCEDURE
+                   ELSE
+                       PERFORM EVALUATE-CURRENT-COMMAND
+                   END-IF
            END-PERFORM.
            MOVE "PRINT" TO WS-RECURSION-FLAG.
            CALL "RECURSION" USING WS-RECURSION-FLAG.
@@ -75,6 +85,7 @@
       ******Add the next command to the recursion OBJECT
                MOVE WS-CURR-COMMAND TO WS-COMMAND-NAME
            END-IF.
+           SET WS-INIT-COMMAND-YES TO FALSE.
        CLOSE-CALL-STACK-PROCEDURE.
            MOVE "CLOSE" TO WS-RECURSION-FLAG.
            CALL "RECURSION" USING WS-RECURSION-FLAG.
@@ -91,7 +102,7 @@
            EVALUATE WS-CURR-COMMAND
            WHEN "write"
                DISPLAY "write"
-               PERFORM INIT-RECURSION-OBJECT-PROCEDURE
+
       *         PERFORM LISP-WRITE-PROCEDURE
            WHEN "+"
                DISPLAY "+"
@@ -108,14 +119,20 @@
               IF WS-CURR-COMMAND(1:LS-SYMBOL-LEN(WS-SYMBOL-TABLE-INDEX))
                   IS NUMERIC THEN
 
-                   MOVE WS-CURR-COMMAND TO WS-COMMAND-RESULT-NUMERIC
+      *             MOVE WS-CURR-COMMAND TO WS-COMMAND-RESULT-NUMERIC
                    DISPLAY "NUMERIC"
                    DISPLAY WS-COMMAND-RESULT-NUMERIC
+                   MOVE WS-CURR-COMMAND TO WS-CURRENT-VALUE-NUMERIC
       *             PERFORM LISP-EVAL-LAST-EXPRESSION
                ELSE
                    Display "OTHER"
+                   MOVE WS-CURR-COMMAND TO WS-CURRENT-VALUE
                END-IF
+               PERFORM APPLY-VALUE-TO-EXPRESSION
            .
+       APPLY-VALUE-TO-EXPRESSION.
+           MOVE WS-COMMAND-NAME TO WS-CURR-COMMAND.
+           PERFORM EVALUATE-CURRENT-COMMAND.
 
 
        OTHER-PROCEDURES.
