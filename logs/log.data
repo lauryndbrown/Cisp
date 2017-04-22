@@ -1,3 +1,4 @@
 0000000001LOG-INIT-PROCEDURE                      Starting Program!
 0000000002TOKENIZER                               Starting Tokenizer
 0000000003TOKENIZER:FILE-HANDLING-PROCEDURE       COMPLETED reading LISP-FILE
+0000000004TOKENIZER:FORMAT-LISP-PROCEDURE         COMPLETED formatting lisp string for parsing

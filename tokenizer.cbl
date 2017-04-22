@@ -64,12 +64,12 @@
        PROCEDURE DIVISION.
        MAIN-PROCEDURE.
            DISPLAY "Tokenizer".
+      ******** Open and read in the lisp file
            PERFORM FILE-HANDLING-PROCEDURE.
-           DISPLAY IN-LISP-RECORD.
-
-
+      *******
            PERFORM UNSTRING-LISP-PROCEDURE.
            GOBACK.
+
 
 
        FILE-HANDLING-PROCEDURE.
@@ -87,7 +87,8 @@
              WS-LOG-RECORD-FUNCTION-NAME.
            MOVE "COMPLETED reading LISP-FILE" TO WS-LOG-RECORD-MESSAGE.
            CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
-       UNSTRING-LISP-PROCEDURE.
+       TOKENIZE-LISP-PROCEDURE.
+      ******** Tokenizes the lisp file and stores it in the WS-SYMBOL Table
            PERFORM FORMAT-LISP-PROCEDURE.
            MOVE 1 TO STRING-PTR.
            MOVE 0 TO WS-SYMBOL-TABLE-SIZE.
@@ -102,13 +103,21 @@
                    ADD 1 TO WS-SYMBOL-TABLE-SIZE
                END-IF
            END-PERFORM.
+      ***********
+       PRINT-SYMBOL-TABLE.
+      ******* Prints Tokenized lisp stored in WS-SYMBOL Table
+           MOVE 1 TO WS-COUNT.
+           PERFORM VARYING WS-COUNT FROM 1 BY 1 UNTIL
+           WS-COUNT GREATER THAN WS-SYMBOL-TABLE-SIZE
+               DISPLAY WS-COUNT
+               DISPLAY WS-SYMBOL(WS-COUNT)
+           END-PERFORM.
        FORMAT-LISP-PROCEDURE.
-
+      ***** Calculates the length of the lisp program.
+      ***** Adding additional spaces between parenthesis
+      ***** for easier parsing.
            MOVE IN-LISP-RECORD TO WS-IN-LISP-RECORD.
            PERFORM CALC-LISP-LENGTH.
-           DISPLAY "LENGTH:" WS-LISP-LENGTH.
-           GOBACK.
-
            MOVE 1 TO WS-FORMAT-STR-INDEX.
            IF NOT WS-IN-LISP-RECORD(2:1) EQUAL " " THEN
                MOVE WS-IN-LISP-RECORD TO WS-PAREN-TEMP-STR
@@ -129,6 +138,13 @@
                WHEN ")"
                    PERFORM FORMAT-PAREN-SPACE-PROCEDURE
            END-PERFORM.
+      ****** Log FORMAT-LISP-PROCEDURE Complete
+           MOVE "ADD" TO WS-LOG-OPERATION-FLAG.
+           MOVE "TOKENIZER:FORMAT-LISP-PROCEDURE" TO
+             WS-LOG-RECORD-FUNCTION-NAME.
+           MOVE "COMPLETED formatting lisp string for parsing" TO
+             WS-LOG-RECORD-MESSAGE.
+           CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
        CALC-LISP-LENGTH.
            MOVE 0 TO WS-LISP-LENGTH.
            MOVE 0 TO WS-NUM-LENGTH-ADD.
