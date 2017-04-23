@@ -23,7 +23,7 @@
                02 WS-LOG-RECORD-FUNCTION-NAME PIC X(40).
                02 WS-LOG-RECORD-MESSAGE PIC X(100).
       *****************************************
-      *    WS Shared with TOKENIZER SubRoutine
+      *    WS Shared with TOKENIZER, LISP SubRoutine
       *****************************************
       *****IF WS-SYMBOL-LENGTH CHANGED HERE PLEASE CHANGE IN TOKENIZER, LISP
        78 WS-SYMBOL-LENGTH VALUE 40.
@@ -31,14 +31,6 @@
            02 WS-SYMBOL-TABLE-SIZE PIC 9.
            02 WS-SYMBOL PIC X(50) OCCURS WS-SYMBOL-LENGTH TIMES.
            02 WS-SYMBOL-LEN PIC 9(2) OCCURS 40 TIMES.
-      *****************************************
-      *    WS Shared with LISP SubRoutine
-      *****************************************
-
-      *****************************************
-      *    WS Shared with RECURSION SubRoutine
-      *****************************************
-
        PROCEDURE DIVISION.
        MAIN-PROCEDURE.
             MOVE "OPEN" TO WS-LOG-OPERATION-FLAG.
@@ -57,29 +49,5 @@
             CALL "LISP" USING WS-LISP-SYMBOLS.
             MOVE "CLOSE" TO WS-LOG-OPERATION-FLAG.
             CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
-      *     PERFORM LOG-INIT-PROCEDURE.
-      *     PERFORM FILE-HANDLING-PROCEDURE.
-      *     MOVE "MAIN-PROCEDURE" TO WS-LOG-RECORD-FUNCTION-NAME.
-      *     MOVE "COMPLETED FILE-HANDLING-PROCEDURE"
-      *       TO WS-LOG-RECORD-MESSAGE.
-      *     PERFORM LOG-WRITE-TO-PROCEDURE.
-      *     PERFORM LISP-PROCEDURE.
-      *     MOVE "MAIN-PROCEDURE" TO WS-LOG-RECORD-FUNCTION-NAME.
-      *     MOVE "COMPLETED LISP-PROCEDURE"
-      *       TO WS-LOG-RECORD-MESSAGE.
-      *     PERFORM LOG-WRITE-TO-PROCEDURE.
-      *     STOP RUN.
            GOBACK.
-       WRITE-LOGGER-PROCEDURE.
-
-
-       LISP-PROCEDURE.
-      *     PERFORM UNSTRING-LISP-PROCEDURE.
-      *******log completion
-      *     MOVE "LISP-PROCEDURE" TO WS-LOG-RECORD-FUNCTION-NAME.
-      *     MOVE "COMPLETED UNSTRING-LISP-PROCEDURE"
-      *       TO WS-LOG-RECORD-MESSAGE.
-      *     PERFORM LOG-WRITE-TO-PROCEDURE.
-      ******
-      *     PERFORM EVALUATE-LISP-PRCEDURE.
        END PROGRAM CISP.

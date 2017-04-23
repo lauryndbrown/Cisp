@@ -1,7 +1,7 @@
       ******************************************************************
-      * Author:
+      * Author: Lauryn Brown
       * Date:
-      * Purpose:
+      * Purpose: log activity done by other programs
       * Tectonics: cobc
       ******************************************************************
        IDENTIFICATION DIVISION.
@@ -12,7 +12,6 @@
        SELECT OPTIONAL LOG-FILE ASSIGN TO DYNAMIC WS-LOG-FILE-NAME
                ORGANISATION IS LINE SEQUENTIAL.
        DATA DIVISION.
-
        FILE SECTION.
        FD LOG-FILE.
            01 LOG-RECORD.
@@ -37,7 +36,6 @@
                PERFORM LOG-WRITE-TO-PROCEDURE
            WHEN OTHER
                PERFORM LOG-FLAG-ERROR-PROCEDURE.
-      *     EXIT PROGRAM.
            GOBACK.
        LOG-INIT-PROCEDURE.
            MOVE '..\logs\log.data' TO WS-LOG-FILE-NAME.

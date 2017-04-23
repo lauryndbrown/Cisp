@@ -1,7 +1,7 @@
       ******************************************************************
-      * Author:
+      * Author: lauryn brown
       * Date:
-      * Purpose:
+      * Purpose: tokenize lisp input file
       * Tectonics: cobc
       ******************************************************************
        IDENTIFICATION DIVISION.
@@ -162,9 +162,6 @@
                WHEN ")"
                    PERFORM FORMAT-PAREN-SPACE-PROCEDURE
            END-PERFORM.
-
-
-
       ****** Log FORMAT-LISP-PROCEDURE Complete
            MOVE "ADD" TO WS-LOG-OPERATION-FLAG.
            MOVE "TOKENIZER:FORMAT-LISP-PROCEDURE" TO
@@ -199,40 +196,6 @@
            DISPLAY 'Expression Start:' WS-PARSE-EXPRESSION-START.
            DISPLAY 'Expression END:' WS-PARSE-EXPRESSION-END.
            DISPLAY 'Expression Length:' WS-PARSE-EXPRESSION-LEN.
-
-
-
-
-       PARSE-STRING-PROCEDURE.
-           PERFORM RESET-PARSE-FLAGS-PROCEDURE.
-           MOVE 1 TO WS-PARSE-STR-INDEX.
-           SET WS-PARSE-HAS-ENDED TO FALSE.
-           PERFORM VARYING WS-PARSE-STR-INDEX FROM 1 BY 1
-           UNTIL WS-PARSE-HAS-ENDED
-              MOVE LS-SYMBOL(WS-COUNT)(WS-PARSE-STR-INDEX:1)
-              TO WS-PARSE-STR-CHAR
-              ADD 1 TO WS-PARSE-EXPRESSION-LEN
-              EVALUATE WS-PARSE-STR-CHAR
-              WHEN '('
-                  SET WS-OPEN-PAREN-YES TO TRUE
-              WHEN ')'
-                   SET WS-CLOSE-PAREN-YES TO TRUE
-              WHEN ' '
-                   SET WS-PARSE-HAS-ENDED TO TRUE
-                   MOVE WS-PARSE-STR-INDEX TO WS-PARSE-EXPRESSION-END
-                   SUBTRACT 1 FROM WS-PARSE-EXPRESSION-END
-                   SUBTRACT 1 FROM WS-PARSE-EXPRESSION-LEN
-              WHEN OTHER
-                   DISPLAY "OTHER!!!"
-                   IF WS-PARSE-EXPRESSION-START = 0 THEN
-                       MOVE WS-PARSE-STR-INDEX
-                       TO WS-PARSE-EXPRESSION-START
-                    END-IF
-           END-PERFORM.
-
-           PERFORM PRINT-PARSE-FLAGS-PROCEDURE.
-           DISPLAY " ".
-
        FORMAT-CHECK-PAREN-PROCEDURE.
       *    ----Check left side of paren
            SUBTRACT 1 FROM WS-FORMAT-STR-INDEX.
