@@ -69,7 +69,7 @@
       ******* tokenize lisp and store in symbol table
                PERFORM TOKENIZE-LISP-PROCEDURE.
                PERFORM CAL-LENGTH-ALL-SYMBOLS.
-      *         PERFORM PRINT-SYMBOL-TABLE.
+      D         PERFORM PRINT-SYMBOL-TABLE.
            GOBACK.
        CAL-LENGTH-ALL-SYMBOLS.
            PERFORM VARYING WS-COUNT FROM 1 BY 1 UNTIL WS-COUNT = 100
@@ -91,7 +91,7 @@
       ***** Opens LISP-FILE for reading ****************************
            ACCEPT WS-LISP-NAME.
            IF WS-LISP-NAME EQUALS SPACES THEN
-               MOVE "..\test\test3.lisp" TO WS-LISP-NAME
+               MOVE "..\test\test4.lisp" TO WS-LISP-NAME
            END-IF.
            OPEN INPUT LISP-FILE.
            READ LISP-FILE.
@@ -105,6 +105,8 @@
        TOKENIZE-LISP-PROCEDURE.
       ******** Tokenizes the lisp file and stores it in the WS-SYMBOL Table
            PERFORM FORMAT-LISP-PROCEDURE.
+      D     DISPLAY "After FORMAT-LISP-PROCEDURE".
+      D     DISPLAY WS-IN-LISP-RECORD.
            MOVE 1 TO STRING-PTR.
            MOVE 0 TO LS-SYMBOL-TABLE-SIZE.
            SET WS-FLAG-YES TO FALSE.
@@ -149,7 +151,7 @@
                ADD 1 TO WS-LISP-LENGTH
            END-IF.
            PERFORM VARYING WS-FORMAT-STR-INDEX FROM WS-FORMAT-STR-INDEX
-           BY 1 UNTIL WS-FORMAT-STR-INDEX = WS-LISP-LENGTH
+           BY 1 UNTIL WS-FORMAT-STR-INDEX > WS-LISP-LENGTH
                SET WS-PAREN-LEFT-YES TO FALSE
                SET WS-PAREN-RIGHT-YES TO FALSE
                MOVE WS-IN-LISP-RECORD TO WS-PAREN-TEMP-STR
@@ -158,6 +160,9 @@
                    PERFORM FORMAT-PAREN-SPACE-PROCEDURE
                WHEN ")"
                    PERFORM FORMAT-PAREN-SPACE-PROCEDURE
+               END-EVALUATE
+      D         DISPLAY WS-IN-LISP-RECORD(WS-FORMAT-STR-INDEX:1)
+      D         " left:" WS-PAREN-RIGHT " right:" WS-PAREN-LEFT
            END-PERFORM.
       ****** Log FORMAT-LISP-PROCEDURE Complete
            MOVE "ADD" TO WS-LOG-OPERATION-FLAG.
