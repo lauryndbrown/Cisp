@@ -87,9 +87,6 @@
                    ADD 1 TO WS-PARSE-EXPRESSION-LEN
                END-IF
            END-PERFORM.
-
-
-
        FILE-HANDLING-PROCEDURE.
       ***** Opens LISP-FILE for reading ****************************
            ACCEPT WS-LISP-NAME.
