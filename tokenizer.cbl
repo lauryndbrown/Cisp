@@ -64,13 +64,11 @@
            02 LS-SYMBOL-LEN PIC 9(2) OCCURS 40 TIMES.
        PROCEDURE DIVISION USING LS-SYMBOL-LENGTH, LS-LISP-SYMBOLS.
        MAIN-PROCEDURE.
-           DISPLAY "Tokenizer".
       ******** Open and read in the lisp file
                PERFORM FILE-HANDLING-PROCEDURE.
       ******* tokenize lisp and store in symbol table
                PERFORM TOKENIZE-LISP-PROCEDURE.
                PERFORM CAL-LENGTH-ALL-SYMBOLS.
-               PERFORM PRINT-SYMBOL-TABLE.
            GOBACK.
        CAL-LENGTH-ALL-SYMBOLS.
            MOVE 1 TO WS-COUNT.

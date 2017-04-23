@@ -10,4 +10,10 @@
 0000000010RECURSION:ADD-TO-CALL-STACK             00001write
 0000000011LISP                                    Command:7
 0000000012LISP                                    Command:9
-0000000013LOGGER:LOG-CLOSE-PROCEDURE              Closed logging file
+0000000013LISP:+                                  Result:00000000000000000016
+0000000014RECURSION:IS-EMPTY-CALL-STACK           N
+0000000015RECURSION:POP-CALL-STACK                00001write
+0000000016LISP:write                              Result:00000000000000000016
+0000000017RECURSION:IS-EMPTY-CALL-STACK           Y
+0000000018RECURSION:CLOSE-CALL-STACK              Closed call-stack file
+0000000019LOGGER:LOG-CLOSE-PROCEDURE              Closed logging file

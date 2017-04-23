@@ -41,7 +41,6 @@
 
        PROCEDURE DIVISION.
        MAIN-PROCEDURE.
-            DISPLAY "CISP".
             MOVE "OPEN" TO WS-LOG-OPERATION-FLAG.
             CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
       ********* Tokenize the Lisp string
