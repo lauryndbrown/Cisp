@@ -91,7 +91,7 @@
       ***** Opens LISP-FILE for reading ****************************
            ACCEPT WS-LISP-NAME.
            IF WS-LISP-NAME EQUALS SPACES THEN
-               MOVE "..\test\test4.lisp" TO WS-LISP-NAME
+               MOVE "..\test\test5.lisp" TO WS-LISP-NAME
            END-IF.
            OPEN INPUT LISP-FILE.
            READ LISP-FILE.
