@@ -57,11 +57,11 @@
            02 WS-LOG-RECORD-MESSAGE PIC X(100).
        LINKAGE SECTION.
       ********* Size of table must equal size specified in CISP
-       01 LS-SYMBOL-LENGTH PIC 9.
+       01 LS-SYMBOL-LENGTH PIC 9(4).
        01 LS-LISP-SYMBOLS.
-           02 LS-SYMBOL-TABLE-SIZE PIC 9.
-           02 LS-SYMBOL PIC X(50) OCCURS 40 TIMES.
-           02 LS-SYMBOL-LEN PIC 9(2) OCCURS 40 TIMES.
+           02 LS-SYMBOL-TABLE-SIZE PIC 9(4).
+           02 LS-SYMBOL PIC X(50) OCCURS 100 TIMES.
+           02 LS-SYMBOL-LEN PIC 9(2) OCCURS 100 TIMES.
        PROCEDURE DIVISION USING LS-SYMBOL-LENGTH, LS-LISP-SYMBOLS.
        MAIN-PROCEDURE.
       ******** Open and read in the lisp file
@@ -69,10 +69,10 @@
       ******* tokenize lisp and store in symbol table
                PERFORM TOKENIZE-LISP-PROCEDURE.
                PERFORM CAL-LENGTH-ALL-SYMBOLS.
+      *         PERFORM PRINT-SYMBOL-TABLE.
            GOBACK.
        CAL-LENGTH-ALL-SYMBOLS.
-           MOVE 1 TO WS-COUNT.
-           PERFORM VARYING WS-COUNT FROM 1 BY 1 UNTIL WS-COUNT = 40
+           PERFORM VARYING WS-COUNT FROM 1 BY 1 UNTIL WS-COUNT = 100
                PERFORM CALC-LENGTH-SYMBOL
                MOVE WS-PARSE-EXPRESSION-LEN TO LS-SYMBOL-LEN(WS-COUNT)
            END-PERFORM.
@@ -80,7 +80,7 @@
            SET WS-PARSE-HAS-ENDED TO FALSE.
            MOVE 0 TO WS-PARSE-EXPRESSION-LEN.
            PERFORM VARYING WS-PARSE-STR-INDEX FROM 1 BY 1 UNTIL
-           WS-PARSE-HAS-ENDED OR WS-PARSE-STR-INDEX > 40
+           WS-PARSE-HAS-ENDED OR WS-PARSE-STR-INDEX > 100
                IF LS-SYMBOL(WS-COUNT)(WS-PARSE-STR-INDEX:1) = " " THEN
                    SET WS-PARSE-HAS-ENDED TO TRUE
                ELSE
@@ -91,7 +91,7 @@
       ***** Opens LISP-FILE for reading ****************************
            ACCEPT WS-LISP-NAME.
            IF WS-LISP-NAME EQUALS SPACES THEN
-               MOVE "..\test\arithmetic.lisp" TO WS-LISP-NAME
+               MOVE "..\test\test3.lisp" TO WS-LISP-NAME
            END-IF.
            OPEN INPUT LISP-FILE.
            READ LISP-FILE.
@@ -109,7 +109,7 @@
            MOVE 0 TO LS-SYMBOL-TABLE-SIZE.
            SET WS-FLAG-YES TO FALSE.
            PERFORM VARYING WS-COUNT FROM 1 BY 1 UNTIL
-             WS-COUNT > LS-SYMBOL-LENGTH OR WS-FLAG
+             WS-COUNT = 100 OR WS-FLAG
                UNSTRING WS-IN-LISP-RECORD DELIMITED BY ALL ' ' INTO
                LS-SYMBOL(WS-COUNT) WITH POINTER STRING-PTR
                IF LS-SYMBOL(WS-COUNT) = SPACES THEN

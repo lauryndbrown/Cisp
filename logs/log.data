@@ -7,13 +7,20 @@
 0000000007RECURSION:INIT                          Initialized Call Stack
 0000000008LISP                                    Command:write
 0000000009LISP                                    Command:+
-0000000010RECURSION:ADD-TO-CALL-STACK             00001write
-0000000011LISP                                    Command:7
-0000000012LISP                                    Command:9
-0000000013LISP:+                                  Result:00000000000000000016
-0000000014RECURSION:IS-EMPTY-CALL-STACK           N
-0000000015RECURSION:POP-CALL-STACK                00001write
-0000000016LISP:write                              Result:00000000000000000016
-0000000017RECURSION:IS-EMPTY-CALL-STACK           Y
-0000000018RECURSION:CLOSE-CALL-STACK              Closed call-stack file
-0000000019LOGGER:LOG-CLOSE-PROCEDURE              Closed logging file
+0000000010RECURSION:ADD-TO-CALL-STACK             00001write               00001
+0000000011LISP                                    Command:9
+0000000012LISP                                    Command:+
+0000000013RECURSION:ADD-TO-CALL-STACK             00002+                   00001
+0000000014LISP                                    Command:7
+0000000015LISP                                    Command:9
+0000000016LISP                                    Command:10
+0000000017LISP:+                                  Result:00000000000000000035
+0000000018RECURSION:IS-EMPTY-CALL-STACK           N
+0000000019RECURSION:POP-CALL-STACK                00002+                   00001
+0000000020LISP:+                                  Result:00000000000000000009
+0000000021RECURSION:IS-EMPTY-CALL-STACK           N
+0000000022RECURSION:POP-CALL-STACK                00002+                   00001
+0000000023LISP:write                              Result:00000000000000000009
+0000000024RECURSION:IS-EMPTY-CALL-STACK           Y
+0000000025RECURSION:CLOSE-CALL-STACK              Closed call-stack file
+0000000026LOGGER:LOG-CLOSE-PROCEDURE              Closed logging file
