@@ -17,6 +17,15 @@
        01 WS-INIT-COMMAND PIC X.
            88 WS-INIT-COMMAND-YES VALUE "Y", FALSE 'N'.
       *****************************************
+      *    WS Shared with CISP-ERROR SubRoutine
+      *****************************************
+       01 WS-CISP-ERROR-FLAG PIC X(30).
+       01 WS-ERROR.
+          02 WS-ERROR-NAME PIC X(40).
+          02 WS-ERROR-FATAL PIC X.
+           88 WS-ERROR-FATAL-YES VALUE 'Y', FALSE 'N'.
+          02 WS-ERROR-MESSAGE PIC X(100).
+      *****************************************
       *    WS Shared with LOGGER SubRoutine
       *****************************************
            01 WS-LOG-OPERATION-FLAG PIC X(5).
@@ -150,9 +159,15 @@
                    (WS-SYMBOL-TABLE-INDEX):1) = '"' THEN
                    MOVE WS-CURR-COMMAND TO WS-CURRENT-VALUE
                ELSE
-                   DISPLAY "LISP FORMAT ERROR:" WS-CURR-COMMAND
-                   "COULD NOT BE INTERPRETED."
-                   STOP RUN
+      **************Command or value not interpreted.
+      **************Throw an error and stop run
+                   MOVE "THROW-ERROR" TO WS-CISP-ERROR-FLAG
+                   MOVE "LISP FORMAT ERROR:" TO WS-ERROR-NAME
+                   STRING WS-CURR-COMMAND DELIMITED BY SPACE
+                   " COULD NOT BE INTERPRETED." DELIMITED BY SIZE
+                   INTO WS-ERROR-MESSAGE
+                   SET WS-ERROR-FATAL-YES TO TRUE
+                   CALL "CISP-ERROR" USING WS-CISP-ERROR-FLAG, WS-ERROR
                END-IF
 
                PERFORM APPLY-VALUE-TO-EXPRESSION

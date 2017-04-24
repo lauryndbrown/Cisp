@@ -6,9 +6,8 @@
 0000000006TOKENIZER:TOKENIZE-LISP-PROCEDURE       COMPLETED tokenizing lisp
 0000000007LISP                                    Starting Lisp Evalutation
 0000000008RECURSION:INIT                          Initialized Call Stack
-0000000009LISP                                    Command:print
-0000000010LISP                                    Command:"hello"
-0000000011LISP:print                              Result:"hello"
-0000000012RECURSION:IS-EMPTY-CALL-STACK           Y
-0000000013RECURSION:CLOSE-CALL-STACK              Closed call-stack file
-0000000014LOGGER:LOG-CLOSE-PROCEDURE              Closed logging file
+0000000009LISP                                    Command:;;
+0000000010LISP                                    Command:Comment
+0000000011CISP-ERROR                              LISP FORMAT ERROR:                      :Comment COULD NOT BE INTERPRETED.
+0000000012RECURSION:CLOSE-CALL-STACK              Closed call-stack file
+0000000013LOGGER:LOG-CLOSE-PROCEDURE              Closed logging file
