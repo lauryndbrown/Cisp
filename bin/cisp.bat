@@ -1,5 +1,5 @@
 cls
-ECHO OFF
+@ECHO OFF
 for /f "delims=" %%i in ('dir /b  "..\test\*.lisp"') do (
     ECHO cisp.exe ..\test\%%i
     TYPE ..\test\%%i

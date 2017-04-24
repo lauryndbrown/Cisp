@@ -1,1 +1,1 @@
-(write "hello")
+(print "hello")

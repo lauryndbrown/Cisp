@@ -133,9 +133,9 @@
            CALL 'LOGGER' USING WS-LOG-OPERATION-FLAG, WS-LOG-RECORD.
        EVALUATE-CURRENT-COMMAND.
            EVALUATE WS-CURR-COMMAND
-           WHEN "write"
-      D         DISPLAY "write"
-               PERFORM LISP-WRITE-PROCEDURE
+           WHEN "print"
+      D         DISPLAY "print"
+               PERFORM LISP-PRINT-PROCEDURE
            WHEN "+"
       D         DISPLAY "add"
                PERFORM LISP-ADD-PROCEDURE
@@ -145,8 +145,14 @@
                   IS NUMERIC THEN
       D             DISPLAY "VALUE"
                    MOVE WS-CURR-COMMAND TO WS-CURRENT-VALUE-NUMERIC
-               ELSE
+               ELSE IF WS-CURR-COMMAND(1:1) = '"'
+                   AND WS-CURR-COMMAND(LS-SYMBOL-LEN
+                   (WS-SYMBOL-TABLE-INDEX):1) = '"' THEN
                    MOVE WS-CURR-COMMAND TO WS-CURRENT-VALUE
+               ELSE
+                   DISPLAY "LISP FORMAT ERROR:" WS-CURR-COMMAND
+                   "COULD NOT BE INTERPRETED."
+                   STOP RUN
                END-IF
 
                PERFORM APPLY-VALUE-TO-EXPRESSION
@@ -155,7 +161,7 @@
            MOVE WS-COMMAND-NAME TO WS-CURR-COMMAND.
            PERFORM EVALUATE-CURRENT-COMMAND.
       D     DISPLAY "APPLY-VALUE-TO-EXPRESSION".
-       LISP-WRITE-PROCEDURE.
+       LISP-PRINT-PROCEDURE.
            MOVE WS-CURRENT-VALUE TO WS-COMMAND-RESULT.
            DISPLAY WS-COMMAND-RESULT.
        LISP-ADD-PROCEDURE.

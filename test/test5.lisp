@@ -1,1 +1,1 @@
-(write 25) (write 34)
+(print 25) (print 34)
