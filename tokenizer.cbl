@@ -57,12 +57,14 @@
            02 WS-LOG-RECORD-MESSAGE PIC X(100).
        LINKAGE SECTION.
       ********* Size of table must equal size specified in CISP
+       01 LS-LISP-FILE-NAME PIC X(30).
        01 LS-SYMBOL-LENGTH PIC 9(4).
        01 LS-LISP-SYMBOLS.
            02 LS-SYMBOL-TABLE-SIZE PIC 9(4).
            02 LS-SYMBOL PIC X(50) OCCURS 100 TIMES.
            02 LS-SYMBOL-LEN PIC 9(2) OCCURS 100 TIMES.
-       PROCEDURE DIVISION USING LS-SYMBOL-LENGTH, LS-LISP-SYMBOLS.
+       PROCEDURE DIVISION USING LS-LISP-FILE-NAME,
+             LS-SYMBOL-LENGTH, LS-LISP-SYMBOLS.
        MAIN-PROCEDURE.
       ******** Open and read in the lisp file
                PERFORM FILE-HANDLING-PROCEDURE.
@@ -89,10 +91,11 @@
            END-PERFORM.
        FILE-HANDLING-PROCEDURE.
       ***** Opens LISP-FILE for reading ****************************
-           ACCEPT WS-LISP-NAME.
-           IF WS-LISP-NAME EQUALS SPACES THEN
-               MOVE "..\test\test5.lisp" TO WS-LISP-NAME
-           END-IF.
+      *     ACCEPT WS-LISP-NAME.
+      *     IF WS-LISP-NAME EQUALS SPACES THEN
+      *         MOVE "..\test\test5.lisp" TO WS-LISP-NAME
+                MOVE LS-LISP-FILE-NAME TO WS-LISP-NAME
+      *     END-IF.
            OPEN INPUT LISP-FILE.
            READ LISP-FILE.
            CLOSE LISP-FILE.

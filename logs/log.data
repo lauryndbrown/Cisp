@@ -14,4 +14,19 @@
 0000000014LISP:write                              Result:00000000000000000034
 0000000015RECURSION:IS-EMPTY-CALL-STACK           Y
 0000000016RECURSION:CLOSE-CALL-STACK              Closed call-stack file
-0000000017LOGGER:LOG-CLOSE-PROCEDURE              Closed logging file
+0000000017TOKENIZER                               Starting Tokenizer
+0000000018TOKENIZER:FILE-HANDLING-PROCEDURE       COMPLETED reading LISP-FILE
+0000000019TOKENIZER:FORMAT-LISP-PROCEDURE         COMPLETED formatting lisp string for parsing
+0000000020TOKENIZER:TOKENIZE-LISP-PROCEDURE       COMPLETED tokenizing lisp
+0000000021LISP                                    Starting Lisp Evalutation
+0000000022RECURSION:INIT                          Initialized Call Stack
+0000000023LISP                                    Command:write
+0000000024LISP                                    Command:25
+0000000025LISP:write                              Result:00000000000000000025
+0000000026RECURSION:IS-EMPTY-CALL-STACK           Y
+0000000027LISP                                    Command:write
+0000000028LISP                                    Command:34
+0000000029LISP:write                              Result:00000000000000000034
+0000000030RECURSION:IS-EMPTY-CALL-STACK           Y
+0000000031RECURSION:CLOSE-CALL-STACK              Closed call-stack file
+0000000032LOGGER:LOG-CLOSE-PROCEDURE              Closed logging file
