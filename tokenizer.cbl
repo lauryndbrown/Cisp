@@ -14,12 +14,16 @@
        DATA DIVISION.
        FILE SECTION.
        FD LISP-FILE.
-           01 IN-LISP-RECORD PIC X(2000).
+           01 IN-LISP-RECORD PIC X(200).
        WORKING-STORAGE SECTION.
        01 WS-LISP-NAME PIC X(30).
-       01 WS-IN-LISP-RECORD PIC X(2000).
-       78 WS-MAX-LISP-LENGTH VALUE 2000.
+       01 WS-IN-LISP-RECORD PIC X(200).
+       01 WS-LISP-EOF PIC X.
+       78 WS-MAX-LISP-LENGTH VALUE 200.
        01 WS-LISP-LENGTH PIC 9(10).
+       01 WS-CALC-LENGTH-STR PIC X(200).
+       01 WS-IS-COMMENT PIC X.
+           88 WS-IS-COMMENT-YES VALUE "Y", FALSE 'N'.
        01 WS-FORMAT-LISP.
            02 WS-NUM-LENGTH-ADD PIC 9(10).
            02 WS-PAREN-RIGHT PIC X.
@@ -66,12 +70,14 @@
        PROCEDURE DIVISION USING LS-LISP-FILE-NAME,
              LS-SYMBOL-LENGTH, LS-LISP-SYMBOLS.
        MAIN-PROCEDURE.
+
       ******** Open and read in the lisp file
-               PERFORM FILE-HANDLING-PROCEDURE.
+           PERFORM FILE-HANDLING-PROCEDURE.
+      D    DISPLAY "AFTER FILE-HANDLING-PROCEDURE:" WS-IN-LISP-RECORD.
       ******* tokenize lisp and store in symbol table
-               PERFORM TOKENIZE-LISP-PROCEDURE.
-               PERFORM CAL-LENGTH-ALL-SYMBOLS.
-      D         PERFORM PRINT-SYMBOL-TABLE.
+           PERFORM TOKENIZE-LISP-PROCEDURE.
+           PERFORM CAL-LENGTH-ALL-SYMBOLS.
+      D    PERFORM PRINT-SYMBOL-TABLE.
            GOBACK.
        CAL-LENGTH-ALL-SYMBOLS.
            PERFORM VARYING WS-COUNT FROM 1 BY 1 UNTIL WS-COUNT = 100
@@ -89,15 +95,44 @@
                    ADD 1 TO WS-PARSE-EXPRESSION-LEN
                END-IF
            END-PERFORM.
+       APPEND-LISP-PROCEDURE.
+      D    DISPLAY IN-LISP-RECORD.
+      **********CALC IN-LISP-RECORD LENGTH
+           MOVE IN-LISP-RECORD TO WS-CALC-LENGTH-STR
+           PERFORM CALC-LISP-LENGTH
+           IF NOT WS-IS-COMMENT-YES THEN
+               IF WS-TEMP-NUM = 0 THEN
+                   MOVE IN-LISP-RECORD TO WS-IN-LISP-RECORD
+               ELSE
+                   ADD 1 TO WS-TEMP-NUM
+                   STRING WS-IN-LISP-RECORD(1:WS-TEMP-NUM)
+                   DELIMITED BY SIZE
+                   IN-LISP-RECORD(1:WS-LISP-LENGTH) DELIMITED BY SIZE
+                   INTO WS-IN-LISP-RECORD
+                   SUBTRACT 1 FROM WS-TEMP-NUM
+               END-IF
+               ADD WS-LISP-LENGTH TO WS-TEMP-NUM
+           END-IF.
        FILE-HANDLING-PROCEDURE.
       ***** Opens LISP-FILE for reading ****************************
-      *     ACCEPT WS-LISP-NAME.
-      *     IF WS-LISP-NAME EQUALS SPACES THEN
-      *         MOVE "..\test\test5.lisp" TO WS-LISP-NAME
-                MOVE LS-LISP-FILE-NAME TO WS-LISP-NAME
-      *     END-IF.
+           MOVE LS-LISP-FILE-NAME TO WS-LISP-NAME
            OPEN INPUT LISP-FILE.
-           READ LISP-FILE.
+           READ LISP-FILE
+               AT END MOVE "Y" TO WS-LISP-EOF
+               NOT AT END
+                   MOVE IN-LISP-RECORD TO WS-CALC-LENGTH-STR
+                   PERFORM CALC-LISP-LENGTH
+                   IF NOT WS-IS-COMMENT-YES THEN
+                       MOVE IN-LISP-RECORD TO WS-IN-LISP-RECORD
+                       MOVE WS-LISP-LENGTH TO WS-TEMP-NUM
+                   END-IF
+           END-READ.
+           PERFORM UNTIL WS-LISP-EOF="Y"
+               READ LISP-FILE
+                   AT END MOVE "Y" TO WS-LISP-EOF
+                   NOT AT END PERFORM APPEND-LISP-PROCEDURE
+               END-READ
+           END-PERFORM.
            CLOSE LISP-FILE.
       ******LOG File Handling
            MOVE "ADD" TO WS-LOG-OPERATION-FLAG.
@@ -109,7 +144,7 @@
       ******** Tokenizes the lisp file and stores it in the WS-SYMBOL Table
            PERFORM FORMAT-LISP-PROCEDURE.
       D     DISPLAY "After FORMAT-LISP-PROCEDURE".
-      D     DISPLAY WS-IN-LISP-RECORD.
+      D     DISPLAY "TOKENIZE-LISP-PROCEDURE:" WS-IN-LISP-RECORD.
            MOVE 1 TO STRING-PTR.
            MOVE 0 TO LS-SYMBOL-TABLE-SIZE.
            SET WS-FLAG-YES TO FALSE.
@@ -142,10 +177,12 @@
       ***** Calculates the length of the lisp program.
       ***** Adding additional spaces between parenthesis
       ***** for easier parsing.
-           MOVE IN-LISP-RECORD TO WS-IN-LISP-RECORD.
+      D    DISPLAY "FORMAT-LISP-PROCEDURE:" WS-IN-LISP-RECORD.
+           MOVE WS-IN-LISP-RECORD TO WS-CALC-LENGTH-STR.
            PERFORM CALC-LISP-LENGTH.
            MOVE 1 TO WS-FORMAT-STR-INDEX.
-           IF NOT WS-IN-LISP-RECORD(2:1) EQUAL " " THEN
+           IF WS-IN-LISP-RECORD(1:1)="("
+               AND NOT WS-IN-LISP-RECORD(2:1) EQUAL " " THEN
                MOVE WS-IN-LISP-RECORD TO WS-PAREN-TEMP-STR
                STRING "( " DELIMITED BY SIZE
                WS-PAREN-TEMP-STR(2:WS-LISP-LENGTH) DELIMITED BY
@@ -163,6 +200,8 @@
                    PERFORM FORMAT-PAREN-SPACE-PROCEDURE
                WHEN ")"
                    PERFORM FORMAT-PAREN-SPACE-PROCEDURE
+      *         WHEN ";"
+
                END-EVALUATE
       D         DISPLAY WS-IN-LISP-RECORD(WS-FORMAT-STR-INDEX:1)
       D         " left:" WS-PAREN-RIGHT " right:" WS-PAREN-LEFT
@@ -178,9 +217,13 @@
       *****Calculate the acutal length of the lisp
            MOVE 0 TO WS-LISP-LENGTH.
            MOVE 0 TO WS-NUM-LENGTH-ADD.
+           SET WS-IS-COMMENT-YES TO FALSE.
            PERFORM VARYING WS-FORMAT-STR-INDEX FROM 1 BY 1 UNTIL
            WS-FORMAT-STR-INDEX = WS-MAX-LISP-LENGTH
-               IF NOT WS-IN-LISP-RECORD(WS-FORMAT-STR-INDEX:1)
+               IF WS-CALC-LENGTH-STR(WS-FORMAT-STR-INDEX:1)
+               EQUAL ";" THEN
+                   SET WS-IS-COMMENT-YES TO TRUE
+               ELSE IF NOT WS-CALC-LENGTH-STR(WS-FORMAT-STR-INDEX:1)
                EQUALS " " THEN
                    ADD 1 TO WS-LISP-LENGTH
                    ADD WS-NUM-LENGTH-ADD TO WS-LISP-LENGTH

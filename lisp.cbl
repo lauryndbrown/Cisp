@@ -149,29 +149,28 @@
       D         DISPLAY "add"
                PERFORM LISP-ADD-PROCEDURE
            WHEN OTHER
+               PERFORM EVALUATE-CURRENT-VALUES.
+       EVALUATE-CURRENT-VALUES.
       ************ Evalute values
-              IF WS-CURR-COMMAND(1:LS-SYMBOL-LEN(WS-SYMBOL-TABLE-INDEX))
-                  IS NUMERIC THEN
-      D             DISPLAY "VALUE"
-                   MOVE WS-CURR-COMMAND TO WS-CURRENT-VALUE-NUMERIC
-               ELSE IF WS-CURR-COMMAND(1:1) = '"'
-                   AND WS-CURR-COMMAND(LS-SYMBOL-LEN
-                   (WS-SYMBOL-TABLE-INDEX):1) = '"' THEN
-                   MOVE WS-CURR-COMMAND TO WS-CURRENT-VALUE
-               ELSE
-      **************Command or value not interpreted.
-      **************Throw an error and stop run
-                   MOVE "THROW-ERROR" TO WS-CISP-ERROR-FLAG
-                   MOVE "LISP FORMAT ERROR:" TO WS-ERROR-NAME
-                   STRING WS-CURR-COMMAND DELIMITED BY SPACE
-                   " COULD NOT BE INTERPRETED." DELIMITED BY SIZE
-                   INTO WS-ERROR-MESSAGE
-                   SET WS-ERROR-FATAL-YES TO TRUE
-                   CALL "CISP-ERROR" USING WS-CISP-ERROR-FLAG, WS-ERROR
-               END-IF
-
-               PERFORM APPLY-VALUE-TO-EXPRESSION
-           .
+           IF WS-CURR-COMMAND(1:LS-SYMBOL-LEN(WS-SYMBOL-TABLE-INDEX))
+           IS NUMERIC THEN
+               MOVE WS-CURR-COMMAND TO WS-CURRENT-VALUE-NUMERIC
+           ELSE IF WS-CURR-COMMAND(1:1) = '"'
+           AND WS-CURR-COMMAND(LS-SYMBOL-LEN(WS-SYMBOL-TABLE-INDEX):1)
+           EQUALS '"' THEN
+               MOVE WS-CURR-COMMAND TO WS-CURRENT-VALUE
+           ELSE
+      *****Command or value not interpreted.
+      *****Throw an error and stop run
+               MOVE "THROW-ERROR" TO WS-CISP-ERROR-FLAG
+               MOVE "LISP FORMAT ERROR:" TO WS-ERROR-NAME
+               STRING WS-CURR-COMMAND DELIMITED BY SPACE
+                 " COULD NOT BE INTERPRETED." DELIMITED BY SIZE
+                 INTO WS-ERROR-MESSAGE
+               SET WS-ERROR-FATAL-YES TO TRUE
+               CALL "CISP-ERROR" USING WS-CISP-ERROR-FLAG, WS-ERROR
+           END-IF.
+           PERFORM APPLY-VALUE-TO-EXPRESSION.
        APPLY-VALUE-TO-EXPRESSION.
            MOVE WS-COMMAND-NAME TO WS-CURR-COMMAND.
            PERFORM EVALUATE-CURRENT-COMMAND.
