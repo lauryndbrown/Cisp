@@ -16,7 +16,7 @@
        FD LISP-FILE.
            01 IN-LISP-RECORD PIC X(200).
        WORKING-STORAGE SECTION.
-       01 WS-LISP-NAME PIC X(30).
+       01 WS-LISP-NAME PIC X(100).
        01 WS-IN-LISP-RECORD PIC X(200).
        01 WS-LISP-EOF PIC X.
        78 WS-MAX-LISP-LENGTH VALUE 200.
@@ -61,7 +61,7 @@
            02 WS-LOG-RECORD-MESSAGE PIC X(100).
        LINKAGE SECTION.
       ********* Size of table must equal size specified in CISP
-       01 LS-LISP-FILE-NAME PIC X(30).
+       01 LS-LISP-FILE-NAME PIC X(100).
        01 LS-SYMBOL-LENGTH PIC 9(4).
        01 LS-LISP-SYMBOLS.
            02 LS-SYMBOL-TABLE-SIZE PIC 9(4).
