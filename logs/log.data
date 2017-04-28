@@ -7,49 +7,8 @@
 0000000007LISP                                    Starting Lisp Evalutation
 0000000008RECURSION:INIT                          Initialized Call Stack
 0000000009LISP                                    Command:print
-0000000010LISP                                    Command:"Hello!"
-0000000011LISP:print                              Result:"Hello!"
+0000000010LISP                                    Command:"hello"
+0000000011LISP:print                              Result:"hello"
 0000000012RECURSION:IS-EMPTY-CALL-STACK           Y
-0000000013LISP                                    Command:print
-0000000014LISP                                    Command:"Numers:"
-0000000015LISP:print                              Result:"Numers:"
-0000000016RECURSION:IS-EMPTY-CALL-STACK           Y
-0000000017LISP                                    Command:print
-0000000018LISP                                    Command:42
-0000000019LISP:print                              Result:00000000000000000042
-0000000020RECURSION:IS-EMPTY-CALL-STACK           Y
-0000000021LISP                                    Command:print
-0000000022LISP                                    Command:"Addition:"
-0000000023LISP:print                              Result:"Addition:"
-0000000024RECURSION:IS-EMPTY-CALL-STACK           Y
-0000000025LISP                                    Command:print
-0000000026LISP                                    Command:+
-0000000027RECURSION:ADD-TO-CALL-STACK             00001print               00001
-0000000028LISP                                    Command:1
-0000000029LISP                                    Command:2
-0000000030LISP                                    Command:+
-0000000031RECURSION:ADD-TO-CALL-STACK             00002+                   00001
-0000000032LISP                                    Command:3
-0000000033LISP                                    Command:5
-0000000034LISP                                    Command:10
-0000000035LISP                                    Command:+
-0000000036RECURSION:ADD-TO-CALL-STACK             00003+                   00002
-0000000037LISP                                    Command:20
-0000000038LISP                                    Command:1
-0000000039LISP:+                                  Result:00000000000000000021
-0000000040RECURSION:IS-EMPTY-CALL-STACK           N
-0000000041RECURSION:POP-CALL-STACK                00003+                   00002
-0000000042LISP:+                                  Result:00000000000000000039
-0000000043RECURSION:IS-EMPTY-CALL-STACK           N
-0000000044RECURSION:POP-CALL-STACK                00003+                   00002
-0000000045LISP:+                                  Result:00000000000000000042
-0000000046RECURSION:IS-EMPTY-CALL-STACK           N
-0000000047RECURSION:POP-CALL-STACK                00002+                   00001
-0000000048LISP:print                              Result:00000000000000000042
-0000000049RECURSION:IS-EMPTY-CALL-STACK           Y
-0000000050LISP                                    Command:print
-0000000051LISP                                    Command:"Yay!"
-0000000052LISP:print                              Result:"Yay!"
-0000000053RECURSION:IS-EMPTY-CALL-STACK           Y
-0000000054RECURSION:CLOSE-CALL-STACK              Closed call-stack file
-0000000055LOGGER:LOG-CLOSE-PROCEDURE              Closed logging file
+0000000013RECURSION:CLOSE-CALL-STACK              Closed call-stack file
+0000000014LOGGER:LOG-CLOSE-PROCEDURE              Closed logging file
