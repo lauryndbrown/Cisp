@@ -4,6 +4,9 @@ A Common Lisp Interpreter Built in COBOL
 ## Purpose
 This is a small project built by a student at the Recurse Center to express a love for COBOL and better understand it.
 
+## Compatibility
+Please note that Cisp is currently only actively developed for Windows. \*Nix users may experience issues.
+
 ## Functionality
 All features are currently in development. This is a list of what is to come.
 - Representation of Symbols and Numbers ![Ongoing Development](https://img.shields.io/badge/Development-Ongoing-green.svg?style=flat-square)
@@ -36,6 +39,11 @@ Currently the COBOL source files are located in the root directory.
   `cd bin`
   `cisp.exe ..\test\test_subdirectory\test_name.lisp`.
 #### Linux
-  Instructions yet to come. The author is a window's user. 
+  Instructions yet to come. The author is a window's user, and \*nix systems are not currently supported. 
   
   A high level overview is to compile the project and run the executable in the bin folder.
+### How-To's
+#### Log to Log File
+Coming soon.
+#### Throw an Error
+Coming soon.
