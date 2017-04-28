@@ -1,10 +1,13 @@
 cls
 @ECHO OFF
-for /f "delims=" %%i in ('dir /b  "..\test\*.lisp"') do (
-    ECHO cisp.exe ..\test\%%i
-    TYPE ..\test\%%i
-    CALL cisp.exe ..\test\%%i
-    ECHO --------------------------
+SET test_dir=..\test\
+ECHO %test_dir%
+for /f  "delims=" %%d in ('dir /b %test_dir%') do (
+ECHO --------------------------
+ECHO Test Directory: %%d
+    for /f  "delims=" %%f in ('dir /b "%test_dir%%%d"') do (
+        ECHO File: %test_dir%%%d\%%f & echo.
+    )
 )
 PAUSE
 EXIT
