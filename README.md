@@ -21,15 +21,24 @@ The README much like the entire project is in current development.
 
 ## Running Cisp
 ### Hello World
-1. `cd test`
-2. `mkdir helloworld`
-3. `cd helloworld`
-4. Create a new file `helloworld.lisp` containing the following:
+1. Make a subdirectory for your lisp file. 
+```cmd
+mkdir test\helloworld
+```
+2. Create a new file `helloworld.lisp` in your subdirectory containing the following:
 ```lisp
 (print "HelloWorld!")
 ```
-5. Navigate back to the `bin` directory, and cd into it.
-6. `cisp.exe ..\test\helloworld\helloworld.lisp`
+3. To run Cisp cd into the bin (Note that you must cd in)
+
+```cmd
+cd bin
+```
+4. Run Cisp
+
+```cmd
+cisp.exe ..\test\helloworld\helloworld.lisp
+```
 
 ### Project Structure
 Currently the COBOL source files are located in the root directory.  
