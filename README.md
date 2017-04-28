@@ -20,6 +20,17 @@ All features are currently in development. This is a list of what is to come.
 The README much like the entire project is in current development. 
 
 ## Running Cisp
+### Hello World
+1. `cd test`
+2. `mkdir helloworld`
+3. `cd helloworld`
+4. Create a new file `helloworld.lisp` containing the following:
+```lisp
+(print "HelloWorld!")
+```
+5. Navigate back to the `bin` directory, and cd into it.
+6. `cisp.exe ..\test\helloworld\helloworld.lisp`
+
 ### Project Structure
 Currently the COBOL source files are located in the root directory.  
 #### Directories
@@ -38,11 +49,18 @@ Currently the COBOL source files are located in the root directory.
   The easiest way I have found to compile COBOL is [GNU's COBOL compilier](https://sourceforge.net/projects/open-cobol/). For those who prefer IDE's I have found [Open COBOL IDE](http://opencobolide.readthedocs.io/en/latest/download.html) to be very helpful.
 ### Running Tests
 #### Windows
-  To run all tests in the project, double click `bin\cisp.bat`. 
+  To run all tests in the project, double click `bin\cisp.bat`
   
   To run a single test:
   `cd bin`
-  `cisp.exe ..\test\test_subdirectory\test_name.lisp`.
+  
+  `cisp.exe ..\test\test_subdirectory\test_name.lisp`
+  
+  #### Create your own Lisp Files for Testing
+  1. Create a directory in `test\` to create another test category.
+  2. In your subdirectory create a lisp file.
+  3.  `cd bin`
+  4. `cisp.exe ..\test\test_subdirectory\test_name.lisp`
 #### Linux
   Instructions yet to come. The author is a window's user, and \*nix systems are not currently supported. 
   
