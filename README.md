@@ -1,18 +1,23 @@
 # Cisp
-A Common Lisp Interpreter Built in COBOL
+A Common Lisp Interpreter Built in COBOL.
 
-## Purpose
+## Overview
+### Purpose
 This is a small project built by a student at the Recurse Center to express a love for COBOL and better understand it.
 
-## Compatibility
+Due to COBOL's lack of functions and recursion, the recursion required for Lisp is built from the ground up using file processing. Also, due to the lack of a widely supported debugger, a system logger was also implemented.
+
+### Compatibility
 Please note that Cisp is currently only actively developed for Windows. \*Nix users may experience issues.
 
-## Functionality
+### Functionality
 All features are currently in development. This is a list of what is to come.
 - Representation of Symbols and Numbers ![Ongoing Development](https://img.shields.io/badge/Development-Ongoing-green.svg?style=flat-square)
 - Basic Arithmetic ![Ongoing Development](https://img.shields.io/badge/Development-Ongoing-green.svg?style=flat-square)
 - Flow-Control Statements  ![Not Currently in Development](https://img.shields.io/badge/Development-No-green.svg?style=flat-square)
 - Lists  ![Not Currently in Development](https://img.shields.io/badge/Development-No-green.svg?style=flat-square)
+### Notes
+The README much like the entire project is in current development. 
 
 ## Running Cisp
 ### Project Structure
@@ -42,8 +47,9 @@ Currently the COBOL source files are located in the root directory.
   Instructions yet to come. The author is a window's user, and \*nix systems are not currently supported. 
   
   A high level overview is to compile the project and run the executable in the bin folder.
-### How-To's
-#### Log to Log File
+## Developing Cisp
+### How Cisp Works
+### Log to Log File
 Coming soon.
-#### Throw an Error
+### Throw an Error
 Coming soon.
